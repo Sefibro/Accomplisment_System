@@ -1,0 +1,156 @@
+.admin-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.top-bar input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.top-bar button {
+    background-color: #5cb85c;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.top-bar button:hover {
+    background-color: #4cae4c;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: row; /* Display children horizontally */
+    gap: 20px; /* Add space between elements */
+}
+
+.left-section {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.addadmin-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    width: 350px;
+    order: 1; /* Ensure it appears first */
+}
+
+.users-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    width: 350px;
+    order: 2; /* Place below addadmin-container */
+}
+
+.right-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    width: 350px; /* Match width with other containers */
+    order: 3; /* Place at the bottom */
+}
+
+.minimal-form input[type="email"],
+.minimal-form input[type="password"],
+.minimal-form input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.minimal-form button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.minimal-form button:hover {
+    background-color: #0056b3;
+}
+
+.users-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+
+.users-list li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.users-list li:last-child {
+    border-bottom: none;
+}
+
+.user-actions button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.user-actions button:hover {
+    background-color: #c82333;
+}
+
+.chart-container {
+    background-color: #f9f9f9;
+    padding: 15px; /* Slightly less padding */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Ensure chart fits within its container */
+    width: 350px;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: auto !important;
+}

@@ -95,6 +95,8 @@ app.post('/register', async (req, res) => {
 
 
             // 2/3/2025
+                   
+
             app.post('/login', async (req, res) => {
                 const { email, password } = req.body;
             
@@ -104,7 +106,7 @@ app.post('/register', async (req, res) => {
             
                 try {
                     // Encrypt the email input before querying the database
-                    const encryptedEmailInput = encrypt(email); // Use the same encryption method as during registration
+                    const encryptedEmailInput = encrypt(email);
             
                     // Query for user with the encrypted email
                     const queryUser = 'SELECT * FROM users WHERE email = ?';
@@ -123,11 +125,49 @@ app.post('/register', async (req, res) => {
                             const isMatch = await bcrypt.compare(password, user.password);
             
                             if (isMatch) {
-                                console.log(`User ${user.email} logged in successfully.`);
-                                return res.status(200).json({ message: 'Login successful', role: user.role });
+                                // Reset failed login attempts on successful login
+                                const resetAttemptsQuery = 'UPDATE users SET failed_attempts = 0, lock_until = NULL WHERE email = ?';
+                                db.query(resetAttemptsQuery, [encryptedEmailInput], (resetErr) => {
+                                    if (resetErr) {
+                                        console.error('Error resetting failed attempts:', resetErr);
+                                        // Log the error but don't fail the login
+                                    }
+                                    console.log(`User ${email} logged in successfully.`);
+                                    return res.status(200).json({ message: 'Login successful', role: user.role });
+                                });
                             } else {
-                                console.warn(`Failed login attempt for user ${user.email}: Invalid password.`);
-                                return res.status(400).json({ message: 'Invalid credentials' });
+                                // Increment failed login attempts
+                                const incrementAttemptsQuery = 'UPDATE users SET failed_attempts = failed_attempts + 1 WHERE email = ?';
+                                db.query(incrementAttemptsQuery, [encryptedEmailInput], (incrementErr) => {
+                                    if (incrementErr) {
+                                        console.error('Error incrementing failed attempts:', incrementErr);
+                                        return res.status(500).json({ message: 'Login failed', error: incrementErr });
+                                    }
+            
+                                    // Check if user is locked
+                                    const checkLockQuery = 'SELECT failed_attempts, lock_until FROM users WHERE email = ?';
+                                    db.query(checkLockQuery, [encryptedEmailInput], (checkLockErr, lockResults) => {
+                                        if (checkLockErr) {
+                                            console.error('Error checking lock status:', checkLockErr);
+                                            return res.status(500).json({ message: 'Login failed', error: checkLockErr });
+                                        }
+            
+                                        if (lockResults.length > 0) {
+                                            const { failed_attempts, lock_until } = lockResults[0];
+                                            if (failed_attempts >= 3 && lock_until > new Date()) {
+                                                const timeLeft = Math.ceil((new Date(lock_until) - new Date()) / 60000); // Minutes remaining
+                                                console.warn(`Failed login attempt for user ${email}: Account locked.`);
+                                                return res.status(403).json({ message: `Account locked. Please try again in ${timeLeft} minutes.` });
+                                            } else {
+                                                console.warn(`Failed login attempt for user ${email}: Invalid password.`);
+                                                return res.status(400).json({ message: 'Invalid credentials' });
+                                            }
+                                        } else {
+                                            console.warn(`Failed login attempt for user ${email}: Invalid password.`);
+                                            return res.status(400).json({ message: 'Invalid credentials' });
+                                        }
+                                    });
+                                });
                             }
                         } else {
                             console.warn(`Failed login attempt for email ${email}: User not found.`);
@@ -139,7 +179,6 @@ app.post('/register', async (req, res) => {
                     return res.status(500).json({ message: 'Internal server error', error });
                 }
             });
-            
             
           // 2/3/2025   
 
@@ -263,8 +302,7 @@ app.post('/register', async (req, res) => {
             });
 
             // Submit report route
-            // Submit report route with firstName validation
-            app.post('/submit', (req, res) => {
+          app.post('/submit', (req, res) => {
                 const { firstName, report } = req.body;
 
                 // Validate that both firstName and report are provided
